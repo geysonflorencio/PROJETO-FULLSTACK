@@ -1,0 +1,203 @@
+dashboard.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Containers dos gráficos -->
+        <div class="row">
+            <!-- Gráfico de Equipamentos -->
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Controle de Equipamentos</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="equipamentosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Veículos -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4>Status da Frota</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="veiculosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Dispositivos -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h4>Monitoramento de Dispositivos</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="dispositivosSegChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gráfico de Equipamentos
+            new Chart(document.getElementById('equipamentosChart'), {
+                type: 'bar',
+                data: {
+                    labels: {{ equipamentos_labels | tojson | safe }},
+                    datasets: [{
+                        label: 'Quantidade em Estoque',
+                        data: {{ equipamentos_data | tojson | safe }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Inventário de Equipamentos',
+                            font: { size: 16 }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Quantidade: ${context.raw} unidades`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Equipamentos'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Veículos
+            new Chart(document.getElementById('veiculosChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: {{ veiculos_labels | tojson | safe }},
+                    datasets: [{
+                        data: {{ veiculos_data | tojson | safe }},
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)', // Disponível
+                            'rgba(255, 206, 86, 0.6)', // Em uso
+                            'rgba(255, 99, 132, 0.6)'  // Manutenção
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Status da Frota de Veículos',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.raw || 0;
+                                    let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    let percentage = Math.round((value * 100) / total);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Dispositivos
+            new Chart(document.getElementById('dispositivosSegChart'), {
+                type: 'bar',
+                data: {
+                    labels: {{ dispositivos_labels | tojson | safe }},
+                    datasets: [{
+                        label: 'Status dos Dispositivos',
+                        data: {{ dispositivos_data | tojson | safe }},
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monitoramento de Dispositivos de Segurança',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Quantidade: ${context.raw} dispositivos`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    <div class="container text-center mb-4">
+        <a href="{{ url_for('menu') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-arrow-left"></i> Voltar ao Menu
+        </a>
+    </div>
+</body>
+</html>

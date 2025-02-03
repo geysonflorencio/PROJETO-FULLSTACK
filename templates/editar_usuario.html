@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Usuário{% endblock %}
+
+{% block head %}
+<style>
+    @font-face {
+        font-family: 'Dark Knight Rises';
+        src: url('https://fonts.cdnfonts.com/s/17292/DarkKnightRises.woff') format('woff');
+    }
+    body {
+        background: url('/static/images/batman_fundo.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: #000;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    .header {
+        font-family: 'Dark Knight Rises', sans-serif;
+        font-size: 4rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        color: #000;
+        position: relative;
+    }
+    .header::before, .header::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        position: absolute;
+        left: 0;
+    }
+    .header::before {
+        top: -10px;
+    }
+    .header::after {
+        bottom: -10px;
+    }
+    .container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header">INDÚSTRIAS WAYNE</div>
+<div class="container mt-5">
+    <h1 class="mb-4">Editar Usuário</h1>
+    <form action="{{ url_for('editar_usuario', id_usuario=usuario['id']) }}" method="POST">
+        <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ usuario['nome'] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="senha">Senha:</label>
+            <input type="password" class="form-control" id="senha" name="senha" required>
+        </div>
+        <div class="form-group">
+            <label for="nivel_acesso">Nível de Acesso:</label>
+            <input type="number" class="form-control" id="nivel_acesso" name="nivel_acesso" value="{{ usuario['nivel_acesso'] }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ url_for('inventario') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

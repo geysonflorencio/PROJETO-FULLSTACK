@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Inventário{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        background: url('/static/images/batman_fundo.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        background: #000000;
+        padding: 20px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        transition: all 0.3s ease;
+        border-right: 2px solid #ffffff;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .menu-item i {
+        margin-right: 15px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .menu-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateX(10px);
+    }
+
+    .content {
+        margin-left: 270px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        margin-top: 20px;
+        margin-right: 20px;
+    }
+
+    .table {
+        width: 100%;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .table th {
+        background: #000;
+        color: white;
+        padding: 12px;
+    }
+
+    .table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .btn {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-success { background: #28a745; color: white; }
+    .btn-warning { background: #ffc107; color: black; }
+    .btn-danger { background: #dc3545; color: white; }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+
+    .badge-success { background: #28a745; color: white; }
+    .badge-warning { background: #ffc107; color: black; }
+    .badge-danger { background: #dc3545; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Barra Lateral -->
+<div class="sidebar">
+    <h2 style="color: white; text-align: center; margin-bottom: 30px;">
+        <i class="fas fa-warehouse"></i> Menu
+    </h2>
+    <a href="#" onclick="showSection('equipamentos')" class="menu-item">
+        <i class="fas fa-boxes"></i>
+        <span>Equipamentos</span>
+    </a>
+    <a href="#" onclick="showSection('veiculos')" class="menu-item">
+        <i class="fas fa-car"></i>
+        <span>Veículos</span>
+    </a>
+    <a href="#" onclick="showSection('dispositivos_seg')" class="menu-item">
+        <i class="fas fa-shield-alt"></i>
+        <span>Dispositivos</span>
+    </a>
+    <a href="{{ url_for('menu') }}" class="menu-item">
+        <i class="fas fa-arrow-left"></i>
+        <span>Voltar</span>
+    </a>
+</div>
+
+<!-- Seções de Conteúdo -->
+<div id="equipamentos" class="content">
+    <h2>Equipamentos</h2>
+    <button onclick="window.location.href='{{ url_for('adicionar_item', categoria='equipamentos') }}'" class="btn btn-success">
+        <i class="fas fa-plus"></i> Adicionar
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipamento in equipamentos %}
+            <tr>
+                <td>{{ equipamento.nome }}</td>
+                <td>{{ equipamento.descricao }}</td>
+                <td>{{ equipamento.quantidade }}</td>
+                <td>
+                    <div class="btn-group">
+                        <button onclick="showEditModal('equipamentos', {{ equipamento.id }})" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteItem('equipamentos', {{ equipamento.id }}, {{ equipamento.quantidade }})" class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="veiculos" class="content">
+    <h2>Veículos</h2>
+    <button onclick="window.location.href='{{ url_for('adicionar_item', categoria='veiculos') }}'" class="btn btn-success">
+        <i class="fas fa-plus"></i> Adicionar
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Modelo</th>
+                <th>Placa</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for veiculo in veiculos %}
+            <tr>
+                <td>{{ veiculo.modelo }}</td>
+                <td>{{ veiculo.placa }}</td>
+                <td>
+                    <span class="badge badge-{{ 'success' if veiculo.status == 'disponivel' else 'warning' if veiculo.status == 'em uso' else 'danger' }}">
+                        {{ veiculo.status }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button onclick="showEditModal('veiculos', {{ veiculo.id }})" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteItem('veiculos', {{ veiculo.id }})" class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="dispositivos_seg" class="content">
+    <h2>Dispositivos de Segurança</h2>
+    <button onclick="window.location.href='{{ url_for('adicionar_item', categoria='dispositivos_seg') }}'" class="btn btn-success">
+        <i class="fas fa-plus"></i> Adicionar
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Localização</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dispositivo in dispositivos_seg %}
+            <tr>
+                <td>{{ dispositivo.nome }}</td>
+                <td>{{ dispositivo.localizacao }}</td>
+                <td>
+                    <span class="badge badge-{{ 'success' if dispositivo.status == 'ativo' else 'danger' }}">
+                        {{ dispositivo.status }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <button onclick="showEditModal('dispositivos_seg', {{ dispositivo.id }})" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteItem('dispositivos_seg', {{ dispositivo.id }})" class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function showSection(section) {
+    document.querySelectorAll('.content').forEach(content => {
+        content.style.display = 'none';
+    });
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.getElementById(section).style.display = 'block';
+}
+
+function showEditModal(type, id) {
+    window.location.href = `/editar_item/${type}/${id}`;
+}
+
+function deleteItem(type, id, maxQuantity = 1) {
+    let quantity = 1;
+    if (type === 'equipamentos') {
+        quantity = prompt('Quantos itens deseja excluir?', '1');
+        if (quantity === null || quantity === '' || isNaN(quantity) || quantity <= 0 || quantity > maxQuantity) {
+            alert('Quantidade inválida.');
+            return;
+        }
+    }
+    if (confirm(`Tem certeza que deseja excluir ${quantity} item(ns)?`)) {
+        fetch(`/excluir_item/${type}/${id}?quantity=${quantity}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Erro ao excluir item');
+            }
+        });
+    }
+}
+
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    showSection('equipamentos');
+});
+</script>
+{% endblock %}

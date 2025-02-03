@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Usuários{% endblock %}
+
+{% block head %}
+<style>
+    body {
+        background: url('/static/images/batman_fundo.jpg') no-repeat center center fixed;
+        background-size: cover;
+        color: #000;
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .table-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 800px;
+    }
+    .table {
+        color: #000;
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+    .table th {
+        background-color: #000;
+        color: #fff;
+    }
+    .btn-action {
+        margin-right: 5px;
+    }
+    .btn-return {
+        margin-top: 20px;
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        text-align: center;
+        display: inline-block;
+    }
+    .btn-return:hover {
+        background-color: #007bff; /* Manter a mesma cor ao passar o mouse */
+        color: #fff; /* Garantir que a cor do texto permaneça branca */
+    }
+</style>
+<script>
+    function confirmDelete(event) {
+        if (!confirm('Você realmente deseja excluir este usuário?')) {
+            event.preventDefault();
+        }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <h2>Lista de Usuários</h2>
+    <a href="{{ url_for('adicionar_usuario') }}" class="btn btn-primary mb-3">Adicionar Usuário</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Nível de Acesso</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.id }}</td>
+                <td>{{ usuario.nome }}</td>
+                <td>{{ usuario.nivel_acesso }}</td>
+                <td>
+                    <a href="{{ url_for('editar_usuario', id_usuario=usuario.id) }}" class="btn btn-warning btn-action">Editar</a>
+                    <form action="{{ url_for('excluir_usuario', id_usuario=usuario.id) }}" method="post" style="display:inline;" onsubmit="confirmDelete(event)">
+                        <button type="submit" class="btn btn-danger btn-action">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('menu') }}" class="btn-return">Retornar ao Menu</a>
+</div>
+{% endblock %}

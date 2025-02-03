@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+<style>
+    body {
+        background: url('/static/images/batman_fundo.jpg') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .container {
+        margin-top: 1cm;
+        text-align: center;
+        color: white;
+    }
+
+    h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        background: linear-gradient(to right, #ff8c00, #e52e71);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        animation: blink 7s infinite;
+        text-shadow: 0 0 0.3cm white;
+    }
+
+    @keyframes blink {
+        0%, 50%, 100% {
+            opacity: 1;
+        }
+        25%, 75% {
+            opacity: 0;
+        }
+    }
+
+    .login-form {
+        margin-bottom: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    .login-form input,
+    .login-form select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .login-form button {
+        width: 100%;
+        padding: 10px;
+        background: #ff8c00;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    .login-form button:hover {
+        background: #e52e71;
+    }
+
+    .flash-message {
+        color: red;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>INDUSTRIAS WAYNE</h1>
+</div>
+<div class="login-form">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {{ messages[0] }}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <form action="{{ url_for('login') }}" method="POST">
+        <input type="text" name="username" placeholder="Usuário" required>
+        <input type="password" name="password" placeholder="Senha" required>
+        <select name="local" required>
+            <option value="" disabled selected>Selecione o Local</option>
+            <option value="oficina">Oficina</option>
+            <option value="laboratorio">Laboratório</option>
+            <option value="sala_de_controle">Sala de Controle</option>
+        </select>
+        <button type="submit">Entrar</button>
+    </form>
+</div>
+<audio autoplay>
+    <source src="{{ url_for('static', filename='audio/audiobat.mp3') }}" type="audio/mpeg">
+    Seu navegador não suporta o elemento de áudio.
+</audio>
+{% endblock %}
