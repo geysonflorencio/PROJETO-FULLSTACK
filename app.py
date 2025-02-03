@@ -13,7 +13,7 @@ areas = {
 
 # Configuração do banco de dados
 DATABASE_CONFIG = {
-    'host': 'localhost',
+    'host': '187.15.148.182',
     'user': 'root',
     'password': 'Guigui#1',
     'database': 'projeto'
